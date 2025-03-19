@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইউনিট কনভার্টার</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e90ff, #00ced1);
+            overflow-y: auto;
+            transition: background 0.5s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 500px;
+            max-width: 90%;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            transition: background 0.5s;
+        }
+
+        .dark-mode .container {
+            background: rgba(44, 62, 80, 0.95);
+            color: #ecf0f1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .dark-mode h1 {
+            color: #ecf0f1;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            color: #34495e;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .dark-mode label {
+            color: #ecf0f1;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
+            outline: none;
+        }
+
+        input[type="number"] {
+            background: #ecf0f1;
+        }
+
+        .dark-mode input[type="number"] {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            text-align: left;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: transform 0.3s;
+            word-wrap: break-word;
+            position: relative;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .result-box:hover {
+            transform: scale(1.05);
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #c0392b;
+        }
+
+        .swap-btn {
+            display: block;
+            margin: 15px auto;
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .swap-btn:hover {
+            background: #c0392b;
+        }
+
+        .theme-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .theme-btn:hover {
+            background: #c0392b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .result-box {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ইউনিট কনভার্টার</h1>
+        <button class="theme-btn" onclick="toggleTheme()">☀️</button>
+        <div class="input-group">
+            <label>ইউনিটের ধরণ</label>
+            <select id="unitType" onchange="updateUnits()">
+                <option value="length">দৈর্ঘ্য</option>
+                <option value="weight">ওজন</option>
+                <option value="temperature">তাপমাত্রা</option>
+                <option value="area">ক্ষেত্রফল</option>
+                <option value="volume">আয়তন</option>
+                <option value="time">সময়</option>
+                <option value="speed">গতি</option>
+                <option value="energy">শক্তি</option>
+                <option value="power">শক্তি/ক্ষমতা</option>
+                <option value="pressure">চাপ</option>
+                <option value="data">তথ্য</option>
+                <option value="angle">কোণ</option>
+                <option value="current">তড়িৎ প্রবাহ</option>
+                <option value="voltage">ভোল্টেজ</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>মান লিখুন</label>
+            <input type="number" id="inputValue" placeholder="মান দিন" oninput="convert()">
+        </div>
+        <div class="input-group">
+            <label>যে ইউনিট থেকে</label>
+            <select id="fromUnit" oninput="convert()"></select>
+        </div>
+        <div class="input-group">
+            <label>যে ইউনিটে (ঐচ্ছিক)</label>
+            <select id="toUnit" oninput="convert()"></select>
+        </div>
+        <button class="swap-btn" onclick="swapUnits()">ইউনিট অদলবদল</button>
+        <div class="result-box" id="result">ফলাফল: <button class="copy-btn" onclick="copyResult()">কপি</button></div>
+        <div class="footer">Powered By SoURoV</div>
+    </div>
+
+    <script>
+        const units = {
+            length: {
+                "মিটার (m)": 1,
+                "কিলোমিটার (km)": 0.001,
+                "সেন্টিমিটার (cm)": 100,
+                "মিলিমিটার (mm)": 1000,
+                "ইঞ্চি (in)": 39.3701,
+                "ফুট (ft)": 3.28084,
+                "গজ (yd)": 1.09361,
+                "মাইল (mi)": 0.000621371,
+                "হাত (hat)": 2.18723,
+                "কোশ (kosh)": 0.000333333,
+                "চেইন (chain)": 0.0497097,
+                "লিঙ্ক (link)": 4.97097,
+                "ফার্লং (fur)": 0.00497097,
+                "নটিক্যাল মাইল (nmi)": 0.000539957
+            },
+            weight: {
+                "কিলোগ্রাম (kg)": 1,
+                "গ্রাম (g)": 1000,
+                "মিলিগ্রাম (mg)": 1000000,
+                "টন (t)": 0.001,
+                "পাউন্ড (lb)": 2.20462,
+                "আউন্স (oz)": 35.274,
+                "মণ (mon)": 0.0266667,
+                "সের (ser)": 1.06667,
+                "ছটাক (chhatak)": 17.0667,
+                "রতি (rati)": 8333.33,
+                "ভরি (bhori)": 85.7339,
+                "তোলা (tola)": 85.7339,
+                "কুইন্টাল (q)": 0.01,
+                "ধানি (dhani)": 0.266667,
+                "কাহন (kahan)": 0.00166667
+            },
+            temperature: {
+                "সেলসিয়াস (°C)": "celsius",
+                "ফারেনহাইট (°F)": "fahrenheit",
+                "কেলভিন (K)": "kelvin"
+            },
+            area: {
+                "বর্গ মিটার (m²)": 1,
+                "বর্গ কিলোমিটার (km²)": 0.000001,
+                "বর্গ সেন্টিমিটার (cm²)": 10000,
+                "হেক্টর (ha)": 0.0001,
+                "একর (acre)": 0.000247105,
+                "বর্গ ফুট (ft²)": 10.7639,
+                "শতক (shotok)": 0.0247105,
+                "কাঠা (katha)": 0.00148736,
+                "বিঘা (bigha)": 0.000074686,
+                "চতুর্থাংশ (choturthangsho)": 0.00594944,
+                "ডেসিমাল (dec)": 0.0247105,
+                "গন্ডা (gonda)": 0.0123553,
+                "কানি (kani)": 0.000617763,
+                "ক্রান্তি (kranti)": 0.00247105
+            },
+            volume: {
+                "লিটার (L)": 1,
+                "মিলিলিটার (mL)": 1000,
+                "কিউবিক মিটার (m³)": 0.001,
+                "গ্যালন (gal)": 0.264172,
+                "কিউবিক ফুট (ft³)": 0.0353147,
+                "কিউবিক ইঞ্চি (in³)": 61.0237,
+                "ঘন হাত (hat³)": 0.105246,
+                "আড়ি (ari)": 2,
+                "পোয়া (poa)": 4,
+                "চাটি (chati)": 8,
+                "ব্যারেল (bbl)": 0.00628981,
+                "কড়া (kora)": 0.05
+            },
+            time: {
+                "সেকেন্ড (s)": 1,
+                "মিনিট (min)": 0.0166667,
+                "ঘণ্টা (hr)": 0.000277778,
+                "দিন (day)": 0.0000115741,
+                "সপ্তাহ (week)": 0.00000165344,
+                "মাস (month)": 0.000000380517,
+                "বছর (year)": 0.0000000317098
+            },
+            speed: {
+                "মিটার/সেকেন্ড (m/s)": 1,
+                "কিলোমিটার/ঘণ্টা (km/h)": 3.6,
+                "মাইল/ঘণ্টা (mph)": 2.23694,
+                "নট (knot)": 1.94384
+            },
+            energy: {
+                "জুল (J)": 1,
+                "কিলোজুল (kJ)": 0.001,
+                "ক্যালরি (cal)": 0.2388459,
+                "কিলোক্যালরি (kcal)": 0.0002388459,
+                "ওয়াট-আওয়ার (Wh)": 0.000277778,
+                "কিলোওয়াট-আওয়ার (kWh)": 0.000000277778,
+                "ইলেকট্রনভোল্ট (eV)": 6.242e18
+            },
+            power: {
+                "ওয়াট (W)": 1,
+                "কিলোওয়াট (kW)": 0.001,
+                "মেগাওয়াট (MW)": 0.000001,
+                "হর্সপাওয়ার (hp)": 0.00134102,
+                "কিলোক্যালরি/ঘণ্টা (kcal/h)": 0.859845
+            },
+            pressure: {
+                "প্যাসকেল (Pa)": 1,
+                "কিলোপ্যাসকেল (kPa)": 0.001,
+                "বার (bar)": 0.00001,
+                "এটমোস্ফিয়ার (atm)": 0.00000986923,
+                "পাউন্ড/বর্গ ইঞ্চি (psi)": 0.000145038,
+                "মিলিমিটার অফ মার্কারি (mmHg)": 0.00750062
+            },
+            data: {
+                "বাইট (B)": 1,
+                "কিলোবাইট (KB)": 0.000976563,
+                "মেগাবাইট (MB)": 0.000000953674,
+                "গিগাবাইট (GB)": 0.000000000931323,
+                "টেরাবাইট (TB)": 0.000000000000909495,
+                "বিট (bit)": 8
+            },
+            angle: {
+                "ডিগ্রি (°)": 1,
+                "রেডিয়ান (rad)": 0.0174533,
+                "গ্রেডিয়ান (grad)": 1.11111,
+                "মিনিট (')": 60,
+                "সেকেন্ড ('')": 3600
+            },
+            current: {
+                "অ্যাম্পিয়ার (A)": 1,
+                "মিলিঅ্যাম্পিয়ার (mA)": 1000,
+                "কিলোঅ্যাম্পিয়ার (kA)": 0.001,
+                "মাইক্রোঅ্যাম্পিয়ার (µA)": 1000000
+            },
+            voltage: {
+                "ভোল্ট (V)": 1,
+                "কিলোভোল্ট (kV)": 0.001,
+                "মিলিভোল্ট (mV)": 1000,
+                "মাইক্রোভোল্ট (µV)": 1000000
+            }
+        };
+
+        function updateUnits() {
+            const unitType = document.getElementById("unitType").value;
+            const fromUnit = document.getElementById("fromUnit");
+            const toUnit = document.getElementById("toUnit");
+
+            fromUnit.innerHTML = "";
+            toUnit.innerHTML = "";
+
+            for (let unit in units[unitType]) {
+                const option1 = document.createElement("option");
+                option1.value = unit;
+                option1.text = unit;
+                fromUnit.appendChild(option1);
+
+                const option2 = document.createElement("option");
+                option2.value = unit;
+                option2.text = unit;
+                toUnit.appendChild(option2);
+            }
+
+            convert();
+        }
+
+        function convert() {
+            const unitType = document.getElementById("unitType").value;
+            const inputValue = parseFloat(document.getElementById("inputValue").value);
+            const fromUnit = document.getElementById("fromUnit").value;
+            const toUnit = document.getElementById("toUnit").value;
+            let resultText = "ফলাফল:\n";
+
+            if (isNaN(inputValue)) {
+                document.getElementById("result").innerText = resultText + "দয়া করে সঠিক সংখ্যা দিন";
+                return;
+            }
+
+            if (unitType === "temperature") {
+                const result = convertTemperature(inputValue, fromUnit, toUnit);
+                resultText += `${inputValue} ${fromUnit.split(" ")[0]} = ${result.toFixed(2)} ${toUnit.split(" ")[0]}`;
+            } else {
+                const fromFactor = units[unitType][fromUnit];
+                let multiResults = [];
+                for (let unit in units[unitType]) {
+                    const toFactor = units[unitType][unit];
+                    const result = (inputValue / fromFactor) * toFactor;
+                    multiResults.push(`${result.toFixed(2)} ${unit.split(" ")[0]}`);
+                }
+                resultText += `${inputValue} ${fromUnit.split(" ")[0]} =\n${multiResults.join("\n")}`;
+            }
+
+            document.getElementById("result").innerText = resultText;
+        }
+
+        function convertTemperature(value, from, to) {
+            if (from === to) return value;
+
+            let celsius;
+            if (from === "সেলসিয়াস (°C)") celsius = value;
+            else if (from === "ফারেনহাইট (°F)") celsius = (value - 32) * 5 / 9;
+            else if (from === "কেলভিন (K)") celsius = value - 273.15;
+
+            if (to === "সেলসিয়াস (°C)") return celsius;
+            else if (to === "ফারেনহাইট (°F)") return (celsius * 9 / 5) + 32;
+            else if (to === "কেলভিন (K)") return celsius + 273.15;
+        }
+
+        function swapUnits() {
+            const fromUnit = document.getElementById("fromUnit");
+            const toUnit = document.getElementById("toUnit");
+            const temp = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = temp;
+            convert();
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById("result").innerText;
+            navigator.clipboard.writeText(resultText);
+            alert("ফলাফল কপি করা হয়েছে!");
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle("dark-mode");
+            const container = document.querySelector(".container");
+            container.classList.toggle("dark-mode");
+            const button = document.querySelector(".theme-btn");
+            button.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+        }
+
+        // Initialize units on page load
+        window.onload = updateUnits;
+    </script>
+</body>
+</html>
